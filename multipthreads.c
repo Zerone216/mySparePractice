@@ -129,7 +129,7 @@ optqueue *optqueueInit(int n)
         return NULL;
 
     memset(obj, 0x00, sizeof(optqueue));
-    obj->n = n;
+    obj->total = n;
     pthread_mutex_init(&(obj->rwmutex), NULL);
 
     obj->has_datas = (bsem *)malloc(sizeof(bsem));
@@ -145,11 +145,6 @@ optqueue *optqueueInit(int n)
     return obj;
 }
 
-void closeFile(int fd)
-{
-    if(fd)
-        close(fd);
-}
 void optqueueDestroy(optqueue *obj)
 {
     if (obj)
@@ -171,7 +166,7 @@ void first(optqueue *obj)
 
     printf("first start ...\n");
     int i = 0;
-    while (i < obj->n)
+    while (i < obj->total)
     {
         printf("read[%d]\n", i);
         usleep(1000);
@@ -187,7 +182,7 @@ void second(optqueue *obj)
 
     printf("second start ...\n");
     int i = 0;
-    while (i < obj->n)
+    while (i < obj->total)
     {
         printf("write[%d]\n", i);
         usleep(1000);
@@ -203,7 +198,7 @@ void third(optqueue *obj)
 
     printf("third start ...\n");
     int i = 0;
-    while (i < obj->n)
+    while (i < obj->total)
     {
         printf("send[%d]\n", i);
         usleep(1000);
