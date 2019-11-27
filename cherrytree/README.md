@@ -5,12 +5,12 @@
 
 ## TREE1
 
-![tree1](/tree1.png)
+![tree1](./tree1.png)
 
 ## TREE2
 
-![tree2](/tree2.png)
+![tree2](./tree2.png)
 
 ## TREE3
 
-![tree3](/tree3.png)
+![tree3](./tree3.png)
