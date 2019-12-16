@@ -248,7 +248,7 @@ static void display_file_info(File * file)
     printf("============================\n");
 }
 
-File * initFile(char * filename, long long offset)
+File * initFile(char * filename, long long offset, int create)
 {
     File * file = (File *) malloc(sizeof(File));
     if(!file)
@@ -265,13 +265,22 @@ File * initFile(char * filename, long long offset)
 
     if(fileAccess(file->filename, F_OK) == 1)
     {
-        printf("file[%s] is not existed, need to create it!\n", file->filename);
-        if((file->fd = fileCreate(file->filename)) == -1)
+        printf("file[%s] is not existed!\n", file->filename);
+
+        if(create)
+        {
+            printf("Now create file[%s]!\n", file->filename);
+            if((file->fd = fileCreate(file->filename)) == -1)
+            {
+                goto err1;
+            }
+
+            file->filesize = 0;
+        }
+        else
         {
             goto err1;
         }
-
-        file->filesize = 0;
     }
     else
     {
@@ -349,29 +358,30 @@ int doFileCopy(char * inputFile, long long skip, char * outputFile, long long se
         return -1;
     }
 
-    if(copySize == 0) //nothing here
+    /* if(copySize == 0) //nothing here
     {
         printf("Warning: copySize[%lld] is equal to zero, do nothing.\n", copySize);
         return 0;
-    }
+    } */
 
-    File * infile = initFile(inputFile, skip);
+    File * infile = initFile(inputFile, skip, FALSE);
     if(!infile)
     {
         goto err;
     }
     //display_file_info(infile);
 
-    File * outfile = initFile(outputFile, seek);
+    File * outfile = initFile(outputFile, seek, TRUE);
     if(!outfile)
     {
         goto err1;
     }
     //display_file_info(outfile);
+    
     if(clean)
         ftruncate(outfile->fd, 0);
 
-    if(copySize < 0)
+    if(copySize <= 0)
         copySize = infile->filesize - infile->start;
     else if(copySize + infile->start > infile->filesize)
     {
